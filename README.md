@@ -1,9 +1,5 @@
 # UPL Goal Data Analysis Project
 
-<a target="_blank" href="https://datalumina.com/">
-    <img src="https://img.shields.io/badge/Datalumina-Project%20Template-2856f7" alt="Datalumina Project" />
-</a>
-
 ## Project Overview
 
 This project analyzes goal-scoring data from the Premier League of Uganda (UPL) across multiple seasons (2019/20 - 2024/25). The pipeline includes:
