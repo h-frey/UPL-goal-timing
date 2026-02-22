@@ -2,275 +2,106 @@
 
 ## Project Overview
 
-This project analyzes goal-scoring data from the Premier League of Uganda (UPL) across multiple seasons (2019/20 - 2024/25). The pipeline includes:
+This portfolio project analyzes goal-scoring patterns in the Uganda Premier League (UPL) across 6 seasons (2019/20–2024/25). The analysis reveals critical timing windows when teams are most vulnerable to conceding goals, with insights for coaches, analysts, and sports data enthusiasts.
 
-1. **Data Scraping** (`scripts/01_scraping.py`): Web scraping UPL match data from official website
-2. **Data Cleaning** (`scripts/02_cleaning.py`): Consolidating, standardizing, and enriching data
-3. **Analysis & Visualization** (`scripts/03_analysis.py`): Exploratory analysis and reporting
+**Pipeline:**
+1. **Data Scraping** (`notebooks/01_scraping.py`): Web scraping UPL match data from official website
+2. **Data Cleaning** (`notebooks/02_cleaning.ipynb`): Consolidating, standardizing, and engineering features
+3. **Analysis & Visualization** (`notebooks/03_analysis.ipynb`): Key metrics, timing patterns, and insights
 
-> **Note:** Notebooks have been archived in `notebooks_archive/` for reference. All production work uses Python scripts.
-
-## Recent Improvements (Phase 1, 2, & 3 Refactoring)
-
-This project has been refactored to follow best practices:
-
-### ✅ Code Organization
-- **Extracted reusable functions** from notebooks into `src/` modules
-- **Separated concerns**: Dataset loading, data cleaning, and visualization
-- **Centralized configuration**: All paths and constants in `src/config.py`
-
-### ✅ File Structure
-- **Raw data** now stored in `data/raw/` (one CSV per season)
-- **Processed data** in `data/processed/` (cleaned & final outputs)
-- **.gitignore** updated to exclude large CSV files and database files
-
-### ✅ Module Documentation
-- Comprehensive docstrings with examples
-- Type hints for better IDE support
-- Error handling for robustness
-
-### ✅ Production Python Scripts (Phase 3)
-- **No import path issues** - scripts are self-contained
-- **CLI arguments** - parameterize season, skip steps, etc.
-- **Orchestrator** - run full pipeline in one command
-- **Uniform format** - all code in production Python files
-
-## Project Organization
+## Project Structure
 
 ```
-├── LICENSE            <- Open-source license
-├── README.md          <- Project documentation
-├── pyproject.toml     <- Project metadata & dependencies (PEP 621)
-├── requirements.txt   <- Legacy requirements file (deprecated - use pyproject.toml)
+upl-goal-timing/
+├── README.md                      <- This file
+├── LICENSE                        <- Open-source license
+├── requirements.txt               <- Python dependencies
 │
 ├── data/
-│   ├── raw/           <- Original, immutable season CSVs (scraper output)
-│   ├── processed/     <- Final cleaned & aggregated data
-│   ├── interim/       <- Intermediate transformations (as needed)
-│   └── external/      <- Reference data (team info, stadiums, etc.)
+│   ├── raw/                       <- Original season CSVs (gitignored)
+│   │   ├── upl_goals_2019_20.csv
+│   │   ├── upl_goals_2020_21.csv
+│   │   └── ...
+│   └── processed/                 <- Cleaned & final datasets (gitignored)
+│       ├── upl_goals_2019_2025_cleaned.csv
+│       └── upl_goals_2019_2025_final.csv
 │
-├── models/            <- Trained models, predictions
+├── notebooks/
+│   ├── 01_scraping.py             <- Web scraping script (standalone)
+│   ├── 02_cleaning.ipynb          <- Data cleaning & feature engineering
+│   └── 03_analysis.ipynb          <- Full analysis & key visualization
 │
-├── scripts/           <- Production Python scripts (replaces notebooks)
-│   ├── __init__.py
-│   ├── 01_scraping.py    <- Fetch UPL data from web
-│   ├── 02_cleaning.py    <- Clean, standardize, enrich
-│   ├── 03_analysis.py    <- Exploratory analysis & visualizations
-│   └── run_pipeline.py   <- Orchestrate all steps
-│
-├── notebooks_archive/ <- Archived Jupyter notebooks (reference only)
-│   ├── scraping.ipynb
-│   ├── cleaning.ipynb
-│   └── analysis.ipynb
-│
-├── src/               <- Reusable Python modules
-│   ├── __init__.py
-│   ├── config.py         <- Configuration, paths, constants
-│   ├── dataset.py        <- Data loading & consolidation
-│   ├── cleaning.py       <- Data cleaning & normalization
-│   ├── plots.py          <- Visualization functions
-│   ├── modeling/         <- (Placeholder for ML code)
-│   └── services/         <- (Placeholder for API integrations)
-│
-├── reports/           <- Generated analysis & figures
-│   └── figures/
-│
-└── references/        <- Documentation, data dictionaries
+└── outputs/
+    └── goal_timing_upl.png        <- Final polished visualization
 ```
 
-## Usage
+## How to Use
 
-### Installation
+### 1. Installation
 
-1. **Clone the repository**
-   ```bash
-   git clone <repo-url>
-   cd magic_minutes
-   ```
-
-2. **Set up Python environment** (Python 3.12+)
-   ```bash
-   python -m venv .venv
-   .venv\Scripts\activate  # Windows
-   # or: source .venv/bin/activate  # macOS/Linux
-   ```
-
-3. **Install dependencies**
-   ```bash
-   pip install -e ".[dev]"
-   # or from pyproject.toml: pip install -e .
-   ```
-
-### Running the Pipeline
-
-The project has been converted to production Python scripts for reliability and consistency. Run steps individually or use the orchestrator:
-
-#### Option 1: Run Full Pipeline
 ```bash
-python scripts/run_pipeline.py
-```
-Executes scraping → cleaning → analysis in sequence.
+# Clone the repository
+git clone https://github.com/h-frey/upl-goal-timing.git
+cd upl-goal-timing
 
-#### Option 2: Run Individual Steps
+# Create a Python virtual environment
+python -m venv .venv
+.venv\Scripts\activate  # Windows
+# source .venv/bin/activate  # macOS/Linux
+
+# Install dependencies
+pip install -r requirements.txt
+```
+
+### 2. Run the Pipeline
+
+**Option A: Run notebooks in Jupyter**
 ```bash
-python scripts/01_scraping.py --season 2025-26     # Scrape a specific season
-python scripts/02_cleaning.py                      # Clean & consolidate all seasons
-python scripts/03_analysis.py                      # Generate analysis & visualizations
+jupyter lab
 ```
+Then execute in order:
+1. `notebooks/01_scraping.py` — Fetch fresh data from UPL website
+2. `notebooks/02_cleaning.ipynb` — Clean & feature-engineer the data
+3. `notebooks/03_analysis.ipynb` — Generate insights & visualization
 
-#### Option 3: Run Pipeline with Skips
+**Option B: Run scraper script only (if data already exists)**
 ```bash
-python scripts/run_pipeline.py --skip scraping     # Skip scraping, run cleaning & analysis
-python scripts/run_pipeline.py --skip cleaning     # Run scraping & analysis only
+python notebooks/01_scraping.py
 ```
 
-#### What Each Step Does:
+### 3. Output
 
-1. **Scraping** (`scripts/01_scraping.py`)
-   - Fetches current season match data from UPL website
-   - `--season YYYY-YY` parameter specifies which season (default: 2025-26)
-   - Outputs to `data/raw/upl_goals_YYYY_YY.csv`
+After running the pipeline:
+- **Cleaned data**: `data/processed/upl_goals_2019_2025_cleaned.csv`
+- **Analysis output**: `outputs/goal_timing_upl.png` (key visualization)
 
-2. **Cleaning** (`scripts/02_cleaning.py`)
-   - Consolidates all season files from `data/raw/`
-   - Standardizes team names, cleans goal data, adds derived features
-   - Outputs to `data/processed/upl_goals_2019_2025_cleaned.csv`
+## Key Metrics & Features
 
-3. **Analysis** (`scripts/03_analysis.py`)
-   - Loads cleaned data from `data/processed/`
-   - Generates summary statistics and 5 visualization PNG files
-   - Outputs figures to `reports/figures/` (01-05 charts)
-   - Prints team patterns and insights to console
+The analysis includes calculation of:
+- **GQR** (Goal Quality Ratio): % of open-play goals
+- **GTSI** (Goal Timing Shift Index): Ratio of late goals (76-90') vs early (16-30')
+- **DIS** (Decisive Impact Score): Goal importance based on time & match state
+- **OVW** (Opponent Vulnerability Window): When teams concede most goals
+- **DDI** (Discipline Degradation Index): Penalty/own-goal ratio 2nd half vs 1st half
 
-### Using the Modules Programmatically
+## Main Finding
 
-If you want to use the modules directly in your own code:
-
-```python
-from src.config import RAW_SEASON_FILES, CLEANED_CSV
-from src.dataset import consolidate_seasons, save_dataframe
-from src.cleaning import clean_dataframe
-from src.plots import plot_goals_by_team
-
-# Load & consolidate seasons
-df_raw = consolidate_seasons(RAW_SEASON_FILES)
-
-# Clean the data
-df_clean = clean_dataframe(df_raw)
-
-# Save
-save_dataframe(df_clean, CLEANED_CSV)
-
-# Visualize
-plot_goals_by_team(df_clean)
-```
-
-## Data Flow
-
-```
-scripts/01_scraping.py
-    ↓ (saves to data/raw/)
-data/raw/upl_goals_*.csv
-    ↓
-scripts/02_cleaning.py
-    ├─ Load from data/raw/
-    ├─ Consolidate + clean
-    ↓ (saves to data/processed/)
-data/processed/upl_goals_2019_2025_cleaned.csv
-    ↓
-scripts/03_analysis.py
-    ├─ Load from data/processed/
-    ├─ Analyze + visualize
-    ↓ (saves to reports/figures/)
-reports/figures/*.png
-```
-
-## Key Modules
-
-### `src/config.py`
-Centralized configuration and constants:
-- File paths (`DATA_RAW`, `DATA_PROCESSED`, `CLEANED_CSV`)
-- Web scraping settings (`USER_AGENT`, `REQUEST_TIMEOUT`)
-- Team name mappings and abbreviations
-- Season lists
-
-### `src/dataset.py`
-Data loading and consolidation:
-- `load_season_csv()`: Load individual season file
-- `consolidate_seasons()`: Merge multiple seasons
-- `save_dataframe()`: Save with error handling
-
-### `src/cleaning.py`
-Data cleaning pipeline:
-- `split_combined_teams()`: Handle "Team A vs Team B" format
-- `normalize_team_names()`: Standardize naming
-- `fix_known_goal_minute_errors()`: Corrections for data issues
-- `add_goal_minute_features()`: Numeric minute conversion
-- `add_derived_features()`: Create analysis columns (match_id, round, etc.)
-- `clean_dataframe()`: Full pipeline
-
-### `src/plots.py`
-Reusable visualizations:
-- `plot_goals_by_team()`: Goals per team (bar chart)
-- `plot_goals_by_season()`: Goals per season
-- `plot_goals_by_minute()`: Distribution across match minutes
-- `plot_goal_type_distribution()`: Penalty vs Own Goal vs Regular
-- `plot_home_vs_away()`: Home advantage analysis
+**The most dangerous 15 minutes in UPL football is 46–60 (right after halftime)**, with 517 goals (17.9% of total). This differs from European leagues, which peak at 76–90' due to late-game fatigue. The UPL's second-half kickoff restart is a critical defensive moment.
 
 ## Dependencies
 
-Core dependencies (from `pyproject.toml`):
-- `pandas>=2.3.3` - Data manipulation
-- `numpy>=2.4.0` - Numerical computing
-- `matplotlib>=3.10.8` - Static visualizations
-- `seaborn>=0.13.2` - Statistical plots
-- `plotly>=6.5.0` - Interactive visualizations
-- `requests>=2.32.5` - Web scraping
-- `beautifulsoup4>=4.14.3` - HTML parsing
-- `python-dotenv>=1.1.1` - Environment variables
+Required packages (see `requirements.txt`):
+- `pandas` – Data manipulation
+- `matplotlib` – Visualization
+- `numpy` – Numerical computing
+- `seaborn` – Statistical plots
+- `scipy` – Scientific computing
+- `plotly` – Interactive charts
+- `jupyter` – Notebook environment
 
-Dev dependencies:
-- `ipykernel>=7.0.0` - Jupyter support
-- `pytest>=7.0.0` - Testing
-- `black>=23.0.0` - Code formatting
-- `ruff>=0.1.0` - Linting
+## Author & Audience
 
-## Notes for Future Development
+- **Portfolio project** for graduate school applications
+- **Target audience**: Growth-focused football data teams, FUFA stakeholders
+- **Format**: Jupyter notebooks + standalone scraper for clarity & reproducibility
 
-- **Add tests**: Unit tests for cleaning functions in `tests/` folder
-- **Parameterize notebooks**: Accept season/date ranges as inputs
-- **Automate pipeline**: Create a scheduler/runner script
-- **Database**: Consider SQLite for larger datasets
-- **API**: Expose analysis via REST API for dashboards
-- **CI/CD**: Add GitHub Actions to validate notebooks on commits
-
-## Data Note
-
-Raw season CSV files (`data/raw/*.csv`) are excluded from git (see `.gitignore`). 
-To reproduce the analysis, run `notebooks/scraping.ipynb` to fetch current data, 
-or restore from a data backup.
-
-├── reports            <- Generated analysis as HTML, PDF, LaTeX, etc.
-│   └── figures        <- Generated graphics and figures to be used in reporting
-│
-└── src                         <- Source code for this project
-    │
-    ├── __init__.py             <- Makes src a Python module
-    │
-    ├── config.py               <- Store useful variables and configuration
-    │
-    ├── dataset.py              <- Scripts to download or generate data
-    │
-    ├── features.py             <- Code to create features for modeling
-    │
-    │    
-    ├── modeling                
-    │   ├── __init__.py 
-    │   ├── predict.py          <- Code to run model inference with trained models          
-    │   └── train.py            <- Code to train models
-    │
-    ├── plots.py                <- Code to create visualizations 
-    │
-    └── services                <- Service classes to connect with external platforms, tools, or APIs
-        └── __init__.py 
-```
